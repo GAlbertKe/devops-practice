@@ -1,0 +1,8 @@
+- What is Docker
+- Docker Desktop
+- Docker Compose & Local Environment Setup
+- Common Docker Commands
+- Dockerfile Syntax
+- Docker Image Management
+- Azure Container Registry & Example
+- Docker Deployment

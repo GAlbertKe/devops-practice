@@ -1,0 +1,111 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0
+    # platform: linux/amd64/v8
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=dev
+      - MYSQL_PASSWORD=dev
+    ports:
+      - 3306:3306
+    command: 
+      # - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci  
+    volumes:
+      - "mysql_data_2025:/var/lib/mysql"
+  
+  # postgresql:
+  #   image: postgres:16
+  #   container_name: postgres_db
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: root
+  #     POSTGRES_PASSWORD: root
+  #     POSTGRES_DB: ba
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - "postgres_data:/var/lib/postgresql/data"    
+
+  mongodb:
+    image: mongo:7.0.8
+    ports:
+      - 27017:27017
+    # restart: always
+    container_name: mongodb
+    volumes:
+      - "mongodb_data1:/data/db"
+    command: [ "mongod", "--replSet", "dev", "--setParameter", "notablescan=1"]
+
+  zookeeper:
+    image: zookeeper:3.5.8
+    ports:
+      - 2181
+    environment:
+      - JMXDISABLE=true
+      - ZOO_DATA_DIR=/data
+      - ZOO_DATA_LOG_DIR=/datalog
+      - ZOO_ADMINSERVER_ENABLED=false
+    volumes:
+      - "zookeeper_data:/data"
+      - "zookeeper_log_data:/datalog"
+
+  kafka:
+    image: ctalbertke/kafka:3.1.0
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ARGS=--override advertised.listeners=PLAINTEXT://localhost:9092 --override num.partitions=3
+    volumes:
+      - "kafka_data:/data"
+    depends_on:
+      - zookeeper
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - "/Users/albertke/documents/chancetop/env/redis/redis.conf:/etc/redis"
+
+  # nginx:
+  #   image: nginx
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   volumes:
+  #     - "/Users/albertke/documents/chancetop/env/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf"
+  #     - "/Users/albertke/documents/chancetop/env/nginx/nginx.crt:/etc/nginx/nginx.crt"
+  #     - "/Users/albertke/documents/chancetop/env/nginx/nginx.key:/etc/nginx/nginx.key"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:7.10.0
+    ports:
+      - 9200:9200
+    environment:
+      - cluster.name=es
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana-oss:7.10.0
+#    ports:
+#      - 5601:5601
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#      - TELEMETRY_ENABLED=false
+#    depends_on:
+#      - elasticsearch
+
+volumes:
+  mysql_data_2025:
+  # postgres_data:
+  mongodb_data1:
+  zookeeper_data:
+  zookeeper_log_data:
+  kafka_data:
+  es_data:

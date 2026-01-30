@@ -1,0 +1,11 @@
+- FROM [base-image]           # Base image (e.g., FROM ubuntu:20.04)
+- RUN [command]               # Execute command during build (e.g., RUN apt-get update)
+- LABEL                       # Adds metadata to an image as key-value pairs
+- WORKDIR /app                # Set working directory inside container
+- USER                        # Sets the username
+- COPY [src] [dest]           # Copy files from host to container
+- ADD [src] [dest]            # Similar to COPY but can handle URLs and auto-extract archives
+- ENV [key]=[value]           # Set environment variable
+- EXPOSE [port]               # Document which port the container listens on
+- CMD ["executable", "param"] # Default command to run when container starts
+- ENTRYPOINT ["executable"]   # Configure container to run as executable
